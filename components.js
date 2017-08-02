@@ -32,16 +32,15 @@ function stinger(p, world) {
 
 function bell(p, world) {
     let pts = []
-    let base = []
 
     let res = 6
+    // Build upper curve of semi-circle.
     for (let i = 0; i <= res; i++) {
 
         let pt = new Point()
         pt.mass = 5
         pt.charge = 5
 
-        let angle = 180 * i / res
         pt.p = vec(
             Math.cos(i / res * PI) * 30 + p.x,
             - Math.sin(i / res * PI) * 30 + p.y
@@ -51,12 +50,13 @@ function bell(p, world) {
         pts.push(pt)
     }
 
-    base.push(pts[0])
-    base.push(pts[pts.length - 1])
+    let base = [pts[0], pts[pts.length - 1]]
 
+    // Shorten half circumference to half diameter.
     res = Math.floor(res * 2 / PI)
     let left = add(p, vec(-30, 0))
     let right = add(p, vec(30, 0))
+    // Build flat bottom of semi-circle.
     for (let i = 1; i < res; i++) {
 
         let pt = new Point()
@@ -73,6 +73,7 @@ function bell(p, world) {
         base.push(pt)
     }
 
+    // Add spring forces around the perimeter of the bell.
     for (let i = 1; i <= pts.length; i++) {
         let a = pts[i - 1]
         let b = pts[i % pts.length]
@@ -102,6 +103,7 @@ function bell(p, world) {
         pop()
     } )
 
+    // Reinforce bell with truss springs.
     for (let trussStride = 3; trussStride <= 4; trussStride++) {
         for (let i = 0; i < pts.length; i++) {
             let a = pts[i]
@@ -111,6 +113,7 @@ function bell(p, world) {
         }
     }
 
+    // Reinforce bell with central high charge point.
     let center = new Point()
     center.p = add(p, vec(0, -15))
     center.mass = 5
